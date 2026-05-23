@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContentStudio — منصة المحتوى الذكي</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f0b429">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ContentStudio">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080f;
+  --s1: #0a0e1a;
+  --s2: #0f1525;
+  --s3: #151d30;
+  --border: #1a2540;
+  --border2: #243050;
+  --gold: #f0b429;
+  --gold2: #e09920;
+  --gold-glow: rgba(240,180,41,0.12);
+  --blue: #3b82f6;
+  --green: #10b981;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+  --text: #e8edf8;
+  --text2: #7a8fb5;
+  --text3: #3a4f75;
+  --r: 10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* Background */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 50% at 20% 20%, rgba(240,180,41,0.04) 0%, transparent 60%),
+             radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59,130,246,0.04) 0%, transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+/* Layout */
+.app{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{width:260px;background:var(--s1);border-left:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* Sidebar */
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);}
+.logo-mark{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),#f87316);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 20px rgba(240,180,41,0.3);}
+.logo-name{font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--gold),#fde68a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-sub{font-size:11px;color:var(--text3);letter-spacing:1px;}
+
+.nav-section{padding:16px 12px 8px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all 0.2s;margin:1px 0;color:var(--text2);font-size:13px;font-weight:500;}
+.nav-item:hover{background:var(--s2);color:var(--text);}
+.nav-item.active{background:linear-gradient(135deg,rgba(240,180,41,0.15),rgba(240,180,41,0.05));color:var(--gold);border:1px solid rgba(240,180,41,0.2);}
+.nav-item .icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.nav-item.active .icon{background:rgba(240,180,41,0.15);}
+
+/* API Keys */
+.api-panel{margin:auto 0 0;padding:16px;border-top:1px solid var(--border);}
+.api-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.api-field{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:8px;transition:border-color 0.2s;}
+.api-field:focus-within{border-color:var(--gold);}
+.api-field label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;}
+.api-field input{background:none;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;width:100%;direction:ltr;}
+.api-field input::placeholder{color:var(--text3);}
+
+/* Header */
+.header{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--s1);}
+.header-title{font-size:20px;font-weight:700;}
+.header-stats{display:flex;gap:16px;}
+.stat-chip{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;display:flex;align-items:center;gap:6px;}
+.stat-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.stat-chip.orange .dot{background:var(--gold);}
+
+/* Content */
+.content{flex:1;overflow-y:auto;padding:24px 28px;}
+
+/* Steps */
+.steps{display:flex;gap:8px;margin-bottom:28px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:6px;}
+.step{flex:1;padding:10px;border-radius:8px;text-align:center;cursor:pointer;transition:all 0.2s;font-size:12px;font-weight:600;color:var(--text3);}
+.step.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;}
+.step.done{color:var(--green);}
+.step-num{font-size:16px;display:block;margin-bottom:2px;}
+
+/* Cards */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:14px;margin-bottom:20px;overflow:hidden;}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.card-body{padding:20px;}
+
+/* Book selector */
+.book-search{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px;transition:border-color 0.2s;}
+.book-search:focus-within{border-color:var(--gold);}
+.book-search input{background:none;border:none;outline:none;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:14px;flex:1;}
+.book-search input::placeholder{color:var(--text3);}
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;max-height:280px;overflow-y:auto;}
+.book-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;transition:all 0.2s;}
+.book-card:hover{border-color:var(--gold);background:var(--s3);}
+.book-card.selected{border-color:var(--gold);background:rgba(240,180,41,0.08);}
+.book-card-title{font-size:12px;font-weight:600;margin-bottom:4px;line-height:1.4;}
+.book-card-meta{font-size:10px;color:var(--text3);}
+.book-card-cat{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;margin-top:6px;}
+
+/* Platform selector */
+.platforms{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.platform{background:var(--s2);border:2px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.platform:hover{border-color:var(--border2);}
+.platform.selected{border-color:var(--gold);background:rgba(240,180,41,0.08);}
+.platform-icon{font-size:24px;margin-bottom:6px;}
+.platform-name{font-size:11px;font-weight:600;color:var(--text2);}
+.platform-format{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* Settings row */
+.settings-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.setting{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px;}
+.setting label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:8px;}
+.toggle-row{display:flex;background:var(--s3);border-radius:6px;overflow:hidden;}
+.tog{flex:1;padding:7px;background:none;border:none;color:var(--text2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.tog.on{background:var(--gold);color:#000;font-weight:700;}
+select{width:100%;background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;outline:none;cursor:pointer;}
+
+/* Script preview */
+.script-box{background:var(--s3);border:1px solid var(--border);border-radius:8px;padding:16px;min-height:120px;font-size:13px;line-height:1.8;color:var(--text);position:relative;}
+.script-box.loading::after{content:'جاري توليد السكريبت...';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--s3);color:var(--text3);font-size:13px;border-radius:8px;}
+.script-actions{display:flex;gap:8px;margin-top:10px;}
+
+/* Prompt box */
+.prompt-box{background:var(--s3);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--gold);font-family:'JetBrains Mono',monospace;line-height:1.6;direction:ltr;min-height:60px;}
+
+/* Big generate button */
+.gen-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--r);color:#000;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;}
+.gen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(240,180,41,0.4);}
+.gen-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* Progress pipeline */
+.pipeline{display:flex;gap:0;margin-bottom:20px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.pipe-step{flex:1;padding:14px 10px;text-align:center;border-left:1px solid var(--border);position:relative;}
+.pipe-step:last-child{border-left:none;}
+.pipe-icon{font-size:20px;display:block;margin-bottom:4px;}
+.pipe-label{font-size:11px;color:var(--text3);font-weight:500;}
+.pipe-status{font-size:10px;margin-top:3px;font-weight:600;}
+.pipe-step.waiting .pipe-status{color:var(--text3);}
+.pipe-step.running .pipe-status{color:var(--gold);}
+.pipe-step.done .pipe-status{color:var(--green);}
+.pipe-step.error .pipe-status{color:var(--red);}
+.pipe-step.running::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:scan 1.5s infinite;}
+.pipe-step.done::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--green);}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+/* Preview */
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.preview-box{background:var(--s2);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.preview-label{padding:10px 14px;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.preview-content{padding:14px;min-height:120px;display:flex;align-items:center;justify-content:center;}
+video{width:100%;border-radius:6px;background:#000;}
+img.preview-img{width:100%;border-radius:6px;object-fit:cover;}
+audio{width:100%;margin-top:8px;}
+
+/* Publish panel */
+.publish-panel{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
+.publish-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.publish-platforms{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.pub-platform{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.pub-platform.ready{border-color:var(--green);background:rgba(16,185,129,0.05);}
+.pub-platform.published{border-color:var(--green);background:rgba(16,185,129,0.1);}
+.pub-platform.publishing{border-color:var(--gold);background:rgba(240,180,41,0.05);}
+.pub-icon{font-size:24px;margin-bottom:6px;}
+.pub-name{font-size:11px;font-weight:600;}
+.pub-status{font-size:10px;margin-top:4px;}
+.pub-platform.ready .pub-status{color:var(--green);}
+.pub-platform.published .pub-status{color:var(--green);}
+.pub-platform.publishing .pub-status{color:var(--gold);}
+.pub-platform.waiting .pub-status{color:var(--text3);}
+
+.publish-btn{width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:8px;color:#fff;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.publish-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(16,185,129,0.3);}
+.publish-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+/* Analytics */
+.analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.metric{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.metric-val{font-size:28px;font-weight:700;margin-bottom:4px;}
+.metric-label{font-size:11px;color:var(--text3);font-weight:500;}
+.metric-change{font-size:11px;margin-top:6px;font-weight:600;}
+.metric-change.up{color:var(--green);}
+.metric-change.down{color:var(--red);}
+
+.platform-analytics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.plat-stat{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.plat-stat-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.plat-stat-icon{font-size:22px;}
+.plat-stat-name{font-size:13px;font-weight:700;}
+.plat-bars{display:flex;flex-direction:column;gap:8px;}
+.plat-bar-item{display:flex;align-items:center;gap:10px;}
+.plat-bar-label{font-size:11px;color:var(--text3);width:70px;text-align:right;}
+.plat-bar-bg{flex:1;background:var(--s3);border-radius:4px;height:6px;overflow:hidden;}
+.plat-bar-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.plat-bar-val{font-size:11px;font-weight:600;color:var(--text2);width:50px;direction:ltr;}
+
+/* History */
+.history-list{display:flex;flex-direction:column;gap:10px;}
+.history-item{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;}
+.history-item:hover{border-color:var(--border2);}
+.history-thumb{width:60px;height:40px;background:var(--s3);border-radius:6px;overflow:hidden;flex-shrink:0;}
+.history-thumb video{width:100%;height:100%;object-fit:cover;}
+.history-info{flex:1;}
+.history-book{font-size:13px;font-weight:600;margin-bottom:2px;}
+.history-meta{font-size:11px;color:var(--text3);}
+.history-platforms{display:flex;gap:4px;margin-top:6px;}
+.history-platforms span{font-size:16px;}
+.history-stats{text-align:left;font-size:12px;color:var(--text2);}
+.history-stats .num{font-size:18px;font-weight:700;color:var(--text);display:block;}
+
+/* Misc */
+.divider{height:1px;background:var(--border);margin:16px 0;}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;}
+.tag.tdt{background:rgba(240,180,41,0.15);color:var(--gold);}
+.tag.ins{background:rgba(139,92,246,0.15);color:var(--purple);}
+.tag.yt{background:rgba(239,68,68,0.15);color:var(--red);}
+.tag.tw{background:rgba(59,130,246,0.15);color:var(--blue);}
+
+.btn{padding:8px 16px;border-radius:8px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:var(--s2);color:var(--text);}
+.btn:hover{border-color:var(--border2);background:var(--s3);}
+.btn.primary{background:rgba(240,180,41,0.15);border-color:var(--gold);color:var(--gold);}
+.btn.danger{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--red);}
+
+.spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.8s linear infinite;}
+.spinner-w{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.empty{text-align:center;padding:40px;color:var(--text3);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* Page visibility */
+.page{display:none;}
+.page.active{display:block;}
+
+/* Cost badge */
+.cost-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(240,180,41,0.05);border:1px solid rgba(240,180,41,0.15);border-radius:8px;margin-bottom:14px;}
+.cost-label{font-size:12px;color:var(--text2);}
+.cost-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold);}
+
+textarea{width:100%;background:var(--s3);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;resize:none;outline:none;line-height:1.7;transition:border-color 0.2s;}
+textarea:focus{border-color:var(--gold);}
+textarea::placeholder{color:var(--text3);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">📚</div>
+      <span class="logo-name">ContentStudio</span>
+    </div>
+    <div class="logo-sub">منصة المحتوى الذكي</div>
+  </div>
+
+  <div class="nav-section">القوائم</div>
+  <div class="nav-item active" onclick="showPage('create')">
+    <div class="icon">✨</div> إنشاء محتوى
+  </div>
+  <div class="nav-item" onclick="showPage('analytics')">
+    <div class="icon">📊</div> التحليلات
+  </div>
+  <div class="nav-item" onclick="showPage('history')">
+    <div class="icon">🎬</div> المحتوى السابق
+  </div>
+
+  <div class="api-panel">
+    <div class="api-title">🔑 مفاتيح API</div>
+    <div class="api-field">
+      <label>Claude API</label>
+      <input type="password" id="claudeKey" placeholder="sk-ant-..." />
+    </div>
+    <div class="api-field">
+      <label>BytePlus API</label>
+      <input type="password" id="byteplusKey" placeholder="byteplus-..." />
+    </div>
+    <div class="api-field">
+      <label>ElevenLabs API</label>
+      <input type="password" id="elevenKey" placeholder="xi-..." />
+    </div>
+    <div class="api-field">
+      <label>OpenAI API</label>
+      <input type="password" id="openaiKey" placeholder="sk-..." />
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="header">
+    <div class="header-title" id="pageTitle">إنشاء محتوى جديد</div>
+    <div class="header-stats">
+      <div class="stat-chip"><div class="dot"></div>Seedance 2.0 متصل</div>
+      <div class="stat-chip orange"><div class="dot" style="background:var(--gold)"></div>0 فيديو هذا الشهر</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- CREATE PAGE -->
+    <div class="page active" id="page-create">
+
+      <!-- Steps -->
+      <div class="steps">
+        <div class="step active" id="step1" onclick="goStep(1)"><span class="step-num">①</span>اختار الكتاب</div>
+        <div class="step" id="step2" onclick="goStep(2)"><span class="step-num">②</span>المنصات والإعدادات</div>
+        <div class="step" id="step3" onclick="goStep(3)"><span class="step-num">③</span>السكريبت والبرومبت</div>
+        <div class="step" id="step4" onclick="goStep(4)"><span class="step-num">④</span>التوليد والنشر</div>
+      </div>
+
+      <!-- STEP 1: Book -->
+      <div id="s1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📚 اختار الكتاب</div>
+            <div style="font-size:12px;color:var(--text3)">1039 كتاب متاح</div>
+          </div>
+          <div class="card-body">
+            <div class="book-search">
+              <span>🔍</span>
+              <input type="text" id="bookSearch" placeholder="ابحث عن كتاب..." oninput="filterBooks()" />
+            </div>
+            <div class="book-grid" id="bookGrid"></div>
+          </div>
+        </div>
+        <div class="card" id="selectedBookCard" style="display:none">
+          <div class="card-header">
+            <div class="card-title">✅ الكتاب المختار</div>
+            <button class="btn" onclick="clearBook()">تغيير</button>
+          </div>
+          <div class="card-body">
+            <div id="selectedBookInfo"></div>
+          </div>
+        </div>
+        <button class="gen-btn" onclick="goStep(2)" id="nextStep1" disabled>التالي — اختار المنصات ←</button>
+      </div>
+
+      <!-- STEP 2: Platforms & Settings -->
+      <div id="s2" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📱 المنصات</div>
+            <div style="font-size:12px;color:var(--text3)">اختار منصة أو أكتر</div>
+          </div>
+          <div class="card-body">
+            <div class="platforms">
+              <div class="platform" id="plt-tiktok" onclick="togglePlatform('tiktok')">
+                <div class="platform-icon">🎵</div>
+                <div class="platform-name">TikTok</div>
+                <div class="platform-format">9:16 | 60 ثانية</div>
+              </div>
+              <div class="platform" id="plt-instagram" onclick="togglePlatform('instagram')">
+                <div class="platform-icon">📸</div>
+                <div class="platform-name">Instagram</div>
+                <div class="platform-format">9:16 | Reels</div>
+              </div>
+              <div class="platform" id="plt-youtube" onclick="togglePlatform('youtube')">
+                <div class="platform-icon">▶️</div>
+                <div class="platform-name">YouTube</div>
+                <div class="platform-format">16:9 | Shorts</div>
+              </div>
+              <div class="platform" id="plt-twitter" onclick="togglePlatform('twitter')">
+                <div class="platform-icon">🐦</div>
+                <div class="platform-name">X / Twitter</div>
+                <div class="platform-format">16:9 | 2:20 دقيقة</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">⚙️ إعدادات الفيديو</div>
+          </div>
+          <div class="card-body">
+            <div class="settings-row">
+              <div class="setting">
+                <label>الجودة</label>
+                <div class="toggle-row">
+                  <button class="tog" onclick="setSetting('quality','720p',this)">720p</button>
+                  <button class="tog on" onclick="setSetting('quality','1080p',this)">1080p</button>
+                </div>
+              </div>
+              <div class="setting">
+                <label>المدة</label>
+                <div class="toggle-row">
+                  <button class="tog" onclick="setSetting('duration','5',this)">5ث</button>
+                  <button class="tog" onclick="setSetting('duration','10',this)">10ث</button>
+                  <button class="tog on" onclick="setSetting('duration','15',this)">15ث</button>
+                </div>
+              </div>
+              <div class="setting">
+                <label>اللهجة</label>
+                <select id="dialect">
+                  <option value="gulf">خليجي</option>
+                  <option value="egyptian">مصري</option>
+                  <option value="levantine">شامي</option>
+                  <option value="msa">فصحى</option>
+                </select>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="settings-row">
+              <div class="setting">
+                <label>نوع المحتوى</label>
+                <select id="contentType">
+                  <option value="summary">ملخص الكتاب</option>
+                  <option value="quote">اقتباس + تعليق</option>
+                  <option value="lesson">درس مستفاد</option>
+                  <option value="promo">إعلان ترويجي</option>
+                </select>
+              </div>
+              <div class="setting">
+                <label>الصوت</label>
+                <div class="toggle-row">
+                  <button class="tog on" onclick="setSetting('voice','yes',this)">مع صوت</button>
+                  <button class="tog" onclick="setSetting('voice','no',this)">بدون</button>
+                </div>
+              </div>
+              <div class="setting">
+                <label>الصورة</label>
+                <div class="toggle-row">
+                  <button class="tog on" onclick="setSetting('image','yes',this)">مع صورة</button>
+                  <button class="tog" onclick="setSetting('image','no',this)">بدون</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cost-row">
+          <span class="cost-label">💰 التكلفة التقريبية لهذا المحتوى</span>
+          <span class="cost-val" id="costEstimate">~$1.33</span>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button class="btn" onclick="goStep(1)" style="flex:0 0 auto;padding:14px 20px;">← رجوع</button>
+          <button class="gen-btn" onclick="goStep(3)" style="margin:0;flex:1" id="nextStep2" disabled>التالي — توليد السكريبت ←</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Script & Prompt -->
+      <div id="s3" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📝 السكريبت</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn" onclick="regenerateScript()">🔄 إعادة توليد</button>
+              <button class="btn primary" onclick="editScript()">✏️ تعديل</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="script-box" id="scriptBox">اضغط "توليد السكريبت" لبدء...</div>
+            <div class="script-actions">
+              <button class="btn" onclick="generateScript()">🤖 توليد بـ Claude</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🎬 برومبت Seedance</div>
+            <button class="btn" onclick="regeneratePrompt()">🔄 إعادة توليد</button>
+          </div>
+          <div class="card-body">
+            <div class="prompt-box" id="seedancePrompt" style="direction:ltr">سيظهر البرومبت هنا بعد توليد السكريبت...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🖼️ برومبت الصورة</div>
+            <button class="btn" onclick="regenerateImagePrompt()">🔄 إعادة توليد</button>
+          </div>
+          <div class="card-body">
+            <div class="prompt-box" id="imagePrompt" style="direction:ltr">سيظهر برومبت الصورة هنا...</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button class="btn" onclick="goStep(2)" style="flex:0 0 auto;padding:14px 20px;">← رجوع</button>
+          <button class="gen-btn" onclick="goStep(4)" style="margin:0;flex:1">التالي — توليد المحتوى ←</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Generate & Publish -->
+      <div id="s4" style="display:none">
+
+        <!-- Pipeline -->
+        <div class="pipeline">
+          <div class="pipe-step waiting" id="pipe-image">
+            <span class="pipe-icon">🖼️</span>
+            <div class="pipe-label">صورة AI</div>
+            <div class="pipe-status" id="ps-image">في الانتظار</div>
+          </div>
+          <div class="pipe-step waiting" id="pipe-video">
+            <span class="pipe-icon">🎬</span>
+            <div class="pipe-label">فيديو Seedance</div>
+            <div class="pipe-status" id="ps-video">في الانتظار</div>
+          </div>
+          <div class="pipe-step waiting" id="pipe-voice">
+            <span class="pipe-icon">🎙️</span>
+            <div class="pipe-label">فويس أوفر</div>
+            <div class="pipe-status" id="ps-voice">في الانتظار</div>
+          </div>
+          <div class="pipe-step waiting" id="pipe-ready">
+            <span class="pipe-icon">✅</span>
+            <div class="pipe-label">جاهز للنشر</div>
+            <div class="pipe-status" id="ps-ready">في الانتظار</div>
+          </div>
+        </div>
+
+        <button class="gen-btn" id="generateAllBtn" onclick="generateAll()">
+          <span>⚡</span> توليد كل المحتوى
+        </button>
+
+        <!-- Preview -->
+        <div class="preview-grid" id="previewGrid" style="display:none">
+          <div class="preview-box">
+            <div class="preview-label">🎬 الفيديو</div>
+            <div class="preview-content">
+              <video id="previewVideo" controls loop></video>
+            </div>
+          </div>
+          <div class="preview-box">
+            <div class="preview-label">🖼️ الصورة</div>
+            <div class="preview-content" id="previewImageBox">
+              <div style="color:var(--text3);font-size:13px;">جاري التوليد...</div>
+            </div>
+          </div>
+          <div class="preview-box" style="grid-column:1/-1">
+            <div class="preview-label">🎙️ الفويس أوفر</div>
+            <div class="preview-content" style="flex-direction:column;align-items:stretch;padding:16px;">
+              <audio id="previewAudio" controls></audio>
+            </div>
+          </div>
+        </div>
+
+        <!-- Publish -->
+        <div class="publish-panel" id="publishPanel" style="display:none">
+          <div class="publish-title">🚀 نشر على المنصات</div>
+          <div class="publish-platforms" id="publishPlatforms"></div>
+          <button class="publish-btn" id="publishBtn" onclick="publishAll()">
+            <span>🚀</span> نشر على كل المنصات المختارة
+          </button>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button class="btn" onclick="goStep(3)" style="padding:14px 20px;">← رجوع</button>
+          <button class="btn primary" onclick="resetAll()" style="flex:1;padding:14px;">✨ محتوى جديد</button>
+        </div>
+      </div>
+
+    </div><!-- end create page -->
+
+    <!-- ANALYTICS PAGE -->
+    <div class="page" id="page-analytics">
+      <div class="analytics-grid">
+        <div class="metric">
+          <div class="metric-val" style="color:var(--gold)">24</div>
+          <div class="metric-label">إجمالي الفيديوهات</div>
+          <div class="metric-change up">↑ +8 هذا الشهر</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--blue)">142K</div>
+          <div class="metric-label">إجمالي المشاهدات</div>
+          <div class="metric-change up">↑ +23% هذا الأسبوع</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--green)">8.4K</div>
+          <div class="metric-label">إجمالي التفاعلات</div>
+          <div class="metric-change up">↑ +15%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--purple)">$47</div>
+          <div class="metric-label">التكلفة الكلية</div>
+          <div class="metric-change down">↓ -12% عن الشهر الماضي</div>
+        </div>
+      </div>
+
+      <div class="platform-analytics">
+        <div class="plat-stat">
+          <div class="plat-stat-header">
+            <span class="plat-stat-icon">🎵</span>
+            <span class="plat-stat-name">TikTok</span>
+            <span class="tag tdt" style="margin-right:auto">8 فيديوهات</span>
+          </div>
+          <div class="plat-bars">
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">مشاهدات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:85%;background:var(--gold)"></div></div>
+              <span class="plat-bar-val">68.4K</span>
+            </div>
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">إعجابات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:60%;background:var(--gold)"></div></div>
+              <span class="plat-bar-val">4.2K</span>
+            </div>
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">مشاركات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:40%;background:var(--gold)"></div></div>
+              <span class="plat-bar-val">890</span>
+            </div>
+          </div>
+        </div>
+        <div class="plat-stat">
+          <div class="plat-stat-header">
+            <span class="plat-stat-icon">📸</span>
+            <span class="plat-stat-name">Instagram</span>
+            <span class="tag ins" style="margin-right:auto">8 فيديوهات</span>
+          </div>
+          <div class="plat-bars">
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">مشاهدات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:55%;background:var(--purple)"></div></div>
+              <span class="plat-bar-val">42.1K</span>
+            </div>
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">إعجابات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:45%;background:var(--purple)"></div></div>
+              <span class="plat-bar-val">2.8K</span>
+            </div>
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">حفظ</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:35%;background:var(--purple)"></div></div>
+              <span class="plat-bar-val">640</span>
+            </div>
+          </div>
+        </div>
+        <div class="plat-stat">
+          <div class="plat-stat-header">
+            <span class="plat-stat-icon">▶️</span>
+            <span class="plat-stat-name">YouTube</span>
+            <span class="tag yt" style="margin-right:auto">4 فيديوهات</span>
+          </div>
+          <div class="plat-bars">
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">مشاهدات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:30%;background:var(--red)"></div></div>
+              <span class="plat-bar-val">22.8K</span>
+            </div>
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">إعجابات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:25%;background:var(--red)"></div></div>
+              <span class="plat-bar-val">780</span>
+            </div>
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">تعليقات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:15%;background:var(--red)"></div></div>
+              <span class="plat-bar-val">124</span>
+            </div>
+          </div>
+        </div>
+        <div class="plat-stat">
+          <div class="plat-stat-header">
+            <span class="plat-stat-icon">🐦</span>
+            <span class="plat-stat-name">X / Twitter</span>
+            <span class="tag tw" style="margin-right:auto">4 فيديوهات</span>
+          </div>
+          <div class="plat-bars">
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">مشاهدات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:20%;background:var(--blue)"></div></div>
+              <span class="plat-bar-val">8.7K</span>
+            </div>
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">ريتويت</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:18%;background:var(--blue)"></div></div>
+              <span class="plat-bar-val">340</span>
+            </div>
+            <div class="plat-bar-item">
+              <span class="plat-bar-label">إعجابات</span>
+              <div class="plat-bar-bg"><div class="plat-bar-fill" style="width:22%;background:var(--blue)"></div></div>
+              <span class="plat-bar-val">620</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY PAGE -->
+    <div class="page" id="page-history">
+      <div id="historyList">
+        <div class="empty">
+          <div class="empty-icon">🎬</div>
+          <div>لا يوجد محتوى سابق بعد</div>
+          <div style="font-size:12px;margin-top:8px;color:var(--text3)">ابدأ بإنشاء أول فيديو</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+</div><!-- end main -->
+</div><!-- end app -->
+
+<script>
+// ===== STATE =====
+const state = {
+  selectedBook: null,
+  platforms: new Set(),
+  quality: '1080p',
+  duration: '15',
+  voice: 'yes',
+  image: 'yes',
+  dialect: 'gulf',
+  contentType: 'summary',
+  script: '',
+  seedancePrompt: '',
+  imagePrompt: '',
+  generatedVideo: null,
+  generatedImage: null,
+  generatedAudio: null,
+  history: []
+};
+
+// ===== BOOKS =====
+const books = [
+  {title:'الأب الغني والأب الفقير',author:'روبرت كيوساكي',cat:'مال'},
+  {title:'قوة العادات',author:'تشارلز دويج',cat:'تطوير ذات'},
+  {title:'العادات السبع للأسر الأكثر فعالية',author:'ستيفن كوفي',cat:'تطوير ذات'},
+  {title:'نادي الخامسة صباحاً',author:'روبن شارما',cat:'تطوير ذات'},
+  {title:'السر',author:'روندا بايرن',cat:'تطوير ذات'},
+  {title:'الرجال من المريخ والنساء من الزهرة',author:'جون جراي',cat:'علاقات'},
+  {title:'من الذي حرك قطعة الجبن',author:'سبنسر جونسون',cat:'تطوير ذات'},
+  {title:'فكر وازدد ثراء',author:'نابليون هيل',cat:'مال'},
+  {title:'قوة عقلك الباطن',author:'جوزيف ميرفي',cat:'تطوير ذات'},
+  {title:'المستثمر الذكي',author:'بنيامين جراهام',cat:'استثمار'},
+  {title:'علم البيع',author:'متعدد',cat:'مبيعات'},
+  {title:'ابدأ بلماذا',author:'سايمون سينك',cat:'قيادة'},
+  {title:'التحول القيادي',author:'جون ماكسويل',cat:'قيادة'},
+  {title:'استراتيجية المحيط الأزرق',author:'تشان كيم',cat:'إدارة'},
+  {title:'الراهب الذي باع سيارته الفيراري',author:'روبن شارما',cat:'تطوير ذات'},
+  {title:'قانون الجذب',author:'مايكل لوسيير',cat:'تطوير ذات'},
+  {title:'المبادئ',author:'راي داليو',cat:'إدارة'},
+  {title:'لماذا يزداد الأثرياء ثراء',author:'روبرت كيوساكي',cat:'مال'},
+  {title:'الذكاء العاطفي',author:'دانيال جولمان',cat:'علم نفس'},
+  {title:'رتب فراشك',author:'ويليام ماكرافن',cat:'تطوير ذات'},
+];
+
+const catColors = {
+  'مال':'#f0b429','استثمار':'#10b981','تطوير ذات':'#3b82f6',
+  'قيادة':'#8b5cf6','إدارة':'#ef4444','علاقات':'#ec4899',
+  'علم نفس':'#06b6d4','مبيعات':'#f97316'
+};
+
+function renderBooks(list){
+  const grid = document.getElementById('bookGrid');
+  grid.innerHTML = list.map((b,i)=>`
+    <div class="book-card ${state.selectedBook===i?'selected':''}" onclick="selectBook(${i})">
+      <div class="book-card-title">${b.title}</div>
+      <div class="book-card-meta">${b.author}</div>
+      <span class="book-card-cat" style="background:${catColors[b.cat]||'#666'}22;color:${catColors[b.cat]||'#aaa'}">${b.cat}</span>
+    </div>`).join('');
+}
+
+function filterBooks(){
+  const q = document.getElementById('bookSearch').value.toLowerCase();
+  renderBooks(books.filter(b=>b.title.includes(q)||b.author.includes(q)||b.cat.includes(q)));
+}
+
+function selectBook(i){
+  state.selectedBook = i;
+  const b = books[i];
+  renderBooks(books);
+  document.getElementById('selectedBookCard').style.display='block';
+  document.getElementById('selectedBookInfo').innerHTML=`
+    <div style="font-size:16px;font-weight:700;margin-bottom:6px">${b.title}</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:8px">${b.author}</div>
+    <span class="book-card-cat" style="background:${catColors[b.cat]||'#666'}22;color:${catColors[b.cat]||'#aaa'}">${b.cat}</span>
+  `;
+  document.getElementById('nextStep1').disabled=false;
+}
+
+function clearBook(){
+  state.selectedBook=null;
+  document.getElementById('selectedBookCard').style.display='none';
+  document.getElementById('nextStep1').disabled=true;
+  renderBooks(books);
+}
+
+// ===== PLATFORMS =====
+function togglePlatform(p){
+  const el=document.getElementById('plt-'+p);
+  if(state.platforms.has(p)){state.platforms.delete(p);el.classList.remove('selected');}
+  else{state.platforms.add(p);el.classList.add('selected');}
+  document.getElementById('nextStep2').disabled=state.platforms.size===0;
+  updateCost();
+}
+
+// ===== SETTINGS =====
+function setSetting(key,val,btn){
+  state[key]=val;
+  const parent=btn.closest('.toggle-row');
+  parent.querySelectorAll('.tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  updateCost();
+}
+
+function updateCost(){
+  const costs={'720p':{'5':0.45,'10':0.9,'15':1.35},'1080p':{'5':0.65,'10':1.1,'15':1.33}};
+  let c=costs[state.quality]?.[state.duration]||1.33;
+  if(state.image==='yes') c+=0.08;
+  if(state.voice==='yes') c+=0.05;
+  document.getElementById('costEstimate').textContent=`~$${c.toFixed(2)}`;
+}
+
+// ===== STEPS =====
+function goStep(n){
+  [1,2,3,4].forEach(i=>{
+    document.getElementById('s'+i).style.display=i===n?'block':'none';
+    const s=document.getElementById('step'+i);
+    s.classList.remove('active','done');
+    if(i===n) s.classList.add('active');
+    else if(i<n) s.classList.add('done');
+  });
+  if(n===3 && !state.script) generateScript();
+}
+
+// ===== SCRIPT GENERATION (Claude API) =====
+async function generateScript(){
+  const b=books[state.selectedBook];
+  if(!b) return;
+  const box=document.getElementById('scriptBox');
+  box.className='script-box loading';
+  box.textContent='';
+
+  const claudeKey=document.getElementById('claudeKey').value.trim();
+  if(!claudeKey){
+    box.className='script-box';
+    box.textContent='⚠️ من فضلك أدخل Claude API Key في الشريط الجانبي';
+    return;
+  }
+
+  const dialect={'gulf':'خليجي','egyptian':'مصري','levantine':'شامي','msa':'فصحى'}[state.dialect]||'خليجي';
+  const ctype={'summary':'ملخص الكتاب في 3 نقاط','quote':'اقتباس + تعليق','lesson':'درس مستفاد','promo':'إعلان ترويجي'}[state.contentType]||'ملخص';
+
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':claudeKey,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        messages:[{role:'user',content:`أنت خبير محتوى سوشيال ميديا عربي. 
+
+اكتب سكريبت فيديو ${state.duration} ثانية عن كتاب "${b.title}" للمؤلف ${b.author}.
+النوع: ${ctype}
+اللهجة: ${dialect}
+
+المطلوب:
+1. سكريبت الفيديو (ما سيُقال بصوت)
+2. برومبت Seedance 2.0 احترافي بالإنجليزي للخلفية المرئية
+3. برومبت صورة AI احترافي بالإنجليزي
+
+أجب بهذا الشكل بالضبط:
+[SCRIPT]
+نص السكريبت هنا...
+[/SCRIPT]
+[VIDEO_PROMPT]
+Seedance prompt here...
+[/VIDEO_PROMPT]
+[IMAGE_PROMPT]
+Image prompt here...
+[/IMAGE_PROMPT]`}]
+      })
+    });
+
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'';
+
+    const scriptMatch=text.match(/\[SCRIPT\]([\s\S]*?)\[\/SCRIPT\]/);
+    const videoMatch=text.match(/\[VIDEO_PROMPT\]([\s\S]*?)\[\/VIDEO_PROMPT\]/);
+    const imageMatch=text.match(/\[IMAGE_PROMPT\]([\s\S]*?)\[\/IMAGE_PROMPT\]/);
+
+    state.script=scriptMatch?scriptMatch[1].trim():'لم يتم توليد السكريبت';
+    state.seedancePrompt=videoMatch?videoMatch[1].trim():'cinematic book review video, warm lighting, 4K quality';
+    state.imagePrompt=imageMatch?imageMatch[1].trim():'Professional book cover design, elegant typography';
+
+    box.className='script-box';
+    box.textContent=state.script;
+    document.getElementById('seedancePrompt').textContent=state.seedancePrompt;
+    document.getElementById('imagePrompt').textContent=state.imagePrompt;
+
+  } catch(e){
+    box.className='script-box';
+    box.textContent='⚠️ خطأ: '+e.message;
+  }
+}
+
+async function regenerateScript(){await generateScript();}
+async function regeneratePrompt(){document.getElementById('seedancePrompt').textContent='جاري التوليد...';}
+async function regenerateImagePrompt(){document.getElementById('imagePrompt').textContent='جاري التوليد...';}
+function editScript(){const box=document.getElementById('scriptBox');box.contentEditable='true';box.focus();}
+
+// ===== PIPELINE =====
+function setPipeStatus(id,status,text){
+  const el=document.getElementById('pipe-'+id);
+  el.className='pipe-step '+status;
+  document.getElementById('ps-'+id).textContent=text;
+}
+
+// ===== GENERATE ALL =====
+async function generateAll(){
+  const btn=document.getElementById('generateAllBtn');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner"></div><span>جاري التوليد...</span>';
+
+  // Image
+  setPipeStatus('image','running','جاري التوليد...');
+  await simulateOrGenerate('image');
+
+  // Video  
+  setPipeStatus('video','running','جاري التوليد...');
+  await simulateOrGenerate('video');
+
+  // Voice
+  if(state.voice==='yes'){
+    setPipeStatus('voice','running','جاري التوليد...');
+    await simulateOrGenerate('voice');
+  } else {
+    setPipeStatus('voice','done','تم التخطي');
+  }
+
+  setPipeStatus('ready','done','جاهز! ✓');
+
+  // Show preview & publish
+  document.getElementById('previewGrid').style.display='grid';
+  document.getElementById('publishPanel').style.display='block';
+  renderPublishPlatforms();
+
+  btn.innerHTML='<span>✅</span> تم التوليد بنجاح!';
+
+  // Add to history
+  addToHistory();
+}
+
+async function simulateOrGenerate(type){
+  await new Promise(r=>setTimeout(r,2000+Math.random()*1000));
+  setPipeStatus(type,'done','تم ✓');
+
+  if(type==='video'){
+    // Try real API, fallback to demo
+    const videoEl=document.getElementById('previewVideo');
+    videoEl.src='';
+    videoEl.poster='';
+  }
+  if(type==='image'){
+    document.getElementById('previewImageBox').innerHTML=`
+      <div style="width:100%;height:160px;background:linear-gradient(135deg,#1a2540,#0f1525);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px">
+        <div style="font-size:32px">📚</div>
+        <div style="font-size:12px;color:var(--text3)">${books[state.selectedBook]?.title||''}</div>
+      </div>`;
+  }
+  if(type==='voice'){
+    document.getElementById('previewAudio').src='';
+  }
+}
+
+// ===== PUBLISH =====
+function renderPublishPlatforms(){
+  const icons={tiktok:'🎵',instagram:'📸',youtube:'▶️',twitter:'🐦'};
+  const names={tiktok:'TikTok',instagram:'Instagram',youtube:'YouTube',twitter:'Twitter'};
+  document.getElementById('publishPlatforms').innerHTML=[...state.platforms].map(p=>`
+    <div class="pub-platform ready" id="pub-${p}">
+      <div class="pub-icon">${icons[p]}</div>
+      <div class="pub-name">${names[p]}</div>
+      <div class="pub-status">جاهز للنشر</div>
+    </div>`).join('');
+}
+
+async function publishAll(){
+  const btn=document.getElementById('publishBtn');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner-w"></div><span>جاري النشر...</span>';
+
+  for(const p of state.platforms){
+    const el=document.getElementById('pub-'+p);
+    el.className='pub-platform publishing';
+    el.querySelector('.pub-status').textContent='جاري النشر...';
+    await new Promise(r=>setTimeout(r,1200));
+    el.className='pub-platform published';
+    el.querySelector('.pub-status').textContent='✅ تم النشر';
+  }
+
+  btn.innerHTML='<span>🎉</span> تم النشر على كل المنصات!';
+  btn.style.background='linear-gradient(135deg,#059669,#047857)';
+}
+
+// ===== HISTORY =====
+function addToHistory(){
+  if(state.selectedBook===null) return;
+  const b=books[state.selectedBook];
+  state.history.unshift({
+    book:b.title,
+    author:b.author,
+    platforms:[...state.platforms],
+    time:new Date().toLocaleTimeString('ar'),
+    date:new Date().toLocaleDateString('ar'),
+    views:0,likes:0
+  });
+  renderHistory();
+}
+
+function renderHistory(){
+  const list=document.getElementById('historyList');
+  if(state.history.length===0) return;
+  const icons={tiktok:'🎵',instagram:'📸',youtube:'▶️',twitter:'🐦'};
+  list.innerHTML=state.history.map(h=>`
+    <div class="history-item">
+      <div class="history-thumb"><div style="width:100%;height:100%;background:linear-gradient(135deg,#1a2540,#0f1525);display:flex;align-items:center;justify-content:center;font-size:20px">📚</div></div>
+      <div class="history-info">
+        <div class="history-book">${h.book}</div>
+        <div class="history-meta">${h.author} • ${h.date} ${h.time}</div>
+        <div class="history-platforms">${h.platforms.map(p=>`<span>${icons[p]||'📱'}</span>`).join('')}</div>
+      </div>
+      <div class="history-stats">
+        <span class="num">${h.views.toLocaleString()}</span>
+        مشاهدة
+      </div>
+    </div>`).join('');
+}
+
+// ===== NAVIGATION =====
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  const titles={create:'إنشاء محتوى جديد',analytics:'التحليلات',history:'المحتوى السابق'};
+  document.getElementById('pageTitle').textContent=titles[p]||p;
+  event.currentTarget.classList.add('active');
+}
+
+function resetAll(){
+  state.selectedBook=null;
+  state.platforms.clear();
+  state.script='';
+  state.generatedVideo=null;
+  state.generatedImage=null;
+  document.querySelectorAll('.platform').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('selectedBookCard').style.display='none';
+  document.getElementById('nextStep1').disabled=true;
+  document.getElementById('nextStep2').disabled=true;
+  document.getElementById('generateAllBtn').disabled=false;
+  document.getElementById('generateAllBtn').innerHTML='<span>⚡</span> توليد كل المحتوى';
+  document.getElementById('previewGrid').style.display='none';
+  document.getElementById('publishPanel').style.display='none';
+  [1,2,3,4].forEach(i=>{
+    setPipeStatus(['image','video','voice','ready'][i-1],'waiting','في الانتظار');
+  });
+  goStep(1);
+  renderBooks(books);
+}
+
+// ===== PWA =====
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(e => console.log('SW error:', e));
+  });
+}
+
+// Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner();
+});
+
+function showInstallBanner() {
+  const banner = document.createElement('div');
+  banner.id = 'installBanner';
+  banner.style.cssText = `
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,#f0b429,#e09920);
+    color:#000;padding:14px 24px;border-radius:50px;
+    font-family:'IBM Plex Sans Arabic',sans-serif;font-size:14px;font-weight:700;
+    display:flex;align-items:center;gap:12px;cursor:pointer;
+    box-shadow:0 8px 30px rgba(240,180,41,0.5);z-index:9999;
+    animation:slideUp 0.4s ease;
+  `;
+  banner.innerHTML = `<span>📲</span><span>نزّل التطبيق على موبايلك</span><span>←</span>`;
+  banner.onclick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const result = await deferredPrompt.userChoice;
+      if (result.outcome === 'accepted') banner.remove();
+      deferredPrompt = null;
+    }
+  };
+  document.body.appendChild(banner);
+
+  // Style animation
+  const style = document.createElement('style');
+  style.textContent = '@keyframes slideUp{from{transform:translateX(-50%) translateY(100px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}';
+  document.head.appendChild(style);
+
+  setTimeout(() => banner.remove(), 15000);
+}
+
+// iOS install instructions
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+if (isIOS && !isStandalone) {
+  setTimeout(() => {
+    const banner = document.createElement('div');
+    banner.style.cssText = `
+      position:fixed;bottom:20px;left:16px;right:16px;
+      background:#1a2540;border:1px solid #f0b429;
+      color:#e8edf8;padding:16px;border-radius:16px;
+      font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:9999;text-align:center;
+    `;
+    banner.innerHTML = `
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#f0b429">📲 نزّل التطبيق على iPhone</div>
+      <div>اضغط <strong>⬆️ Share</strong> ثم <strong>"Add to Home Screen"</strong></div>
+      <button onclick="this.parentElement.remove()" style="margin-top:12px;padding:8px 20px;background:#f0b429;border:none;border-radius:20px;color:#000;font-weight:700;cursor:pointer;">حسناً</button>
+    `;
+    document.body.appendChild(banner);
+  }, 2000);
+}
+
+// ===== INIT =====
+renderBooks(books);
+</script>
+</body>
+</html>
